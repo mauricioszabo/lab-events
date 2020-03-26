@@ -1,13 +1,16 @@
 (ns events.core
-  (:require [reagent.core :as reagent]
+  (:require [events.component.search-form :refer [search-form]]
+            [reagent.core :as reagent]
             [reagent.dom]))
 
+(defn search-events [country city]
+  (.log js/console (str country ", " city)))
+
 (defn app []
-  (let [counter (reagent/atom 0)]
-    (fn [txt]
-      [:button.green
-       {:on-click #(swap! counter inc)}
-       (str txt " - " @counter)])))
+  [:div
+   [:div.row [search-form search-events]]])
 
 (defn ^:export main []
-  (reagent.dom/render [app "Hello, Reagent"] (.getElementById js/document "app")))
+  (reagent.dom/render
+   [app]
+   (.getElementById js/document "app")))
