@@ -8,7 +8,8 @@
 
 (defn app []
   [:div
-   [:div.row [search-form search-events]]])
+   [:div.row
+    [search-form search-events]]])
 
 (defn ^:export main []
   (reagent.dom/render
