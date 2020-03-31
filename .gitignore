@@ -5,6 +5,8 @@ public/js
 /checkouts
 /src/gen
 
+.clj-kondo/
+
 pom.xml
 pom.xml.asc
 *.iml
