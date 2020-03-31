@@ -1,0 +1,15 @@
+i.event-detail-icon {
+  padding-right: 0.3rem;
+}
+
+span.event-price + span.event-price::before {
+  content: ", ";
+}
+
+a.event-fav-on {
+  color: #ffd600;
+}
+
+a.event-fav-off {
+  color: #e0e0e0;
+}

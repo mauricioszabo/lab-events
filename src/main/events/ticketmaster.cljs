@@ -1,5 +1,6 @@
 (ns events.ticketmaster
-  (:require [ajax.core :as ajax]
+  (:require [clojure.string :as str]
+            [ajax.core :as ajax]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as csk.extras]))
 
@@ -9,8 +10,9 @@
 
 (defn extract-events [response]
   (->> (get-in response ["_embedded" "events"])
-       (map #(select-keys % ["id" "name" "description" "url" "images" "dates" "priceRanges"]))
-       (map #(csk.extras/transform-keys csk/->kebab-case-keyword %))))
+       (map #(select-keys % ["id" "name" "url" "images" "dates" "priceRanges"]))
+       (map #(csk.extras/transform-keys csk/->kebab-case-keyword %))
+       (map #(update % :name str/trim))))
 
 (defn extract-page [response]
   (->> (get response "page") (csk.extras/transform-keys csk/->kebab-case-keyword)))
