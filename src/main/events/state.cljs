@@ -1,68 +1,36 @@
 (ns events.state
   (:require [reagent.core :as reagent]))
 
-(def app-state
-  (reagent/atom {:search-params {}
-                 :events {}
-                 :favorites {}
-                 :page {}
-                 :display :all}))
+(defn initial-state []
+  {:search-params {:city ""
+                   :sort "name,asc"}
+   :events {:items {}
+            :page {}}})
+
+(def state (reagent/atom (initial-state)))
+
+(defn reset-state! []
+  (reset! state (initial-state)))
 
 (defn search-params []
-  (:search-params @app-state))
+  (:search-params @state))
 
-(defn search-params-cursor []
-  (reagent/cursor app-state [:search-params]))
+(defn set-search-param! [name value]
+  (swap! state update :search-params assoc name value))
+
+(defn set-search-result! [events page]
+  (let [events (->> events
+                    (map #(assoc % :fav? false))
+                    (reduce #(assoc %1 (:id %2) %2) {}))]
+    (swap! state update :events assoc
+           :items events
+           :page page)))
 
 (defn events []
-  (:events @app-state))
+  (-> @state (get-in [:events :items]) vals))
 
-(defn favorites []
-  (:favorites @app-state))
+(defn events-page []
+  (get-in @state [:events :page]))
 
-(defn page []
-  (:page @app-state))
-
-(defn current-page-number []
-  (:number (page)))
-
-(defn display-mode []
-  (:display @app-state))
-
-(defn set-display-mode! [mode]
-  (if (= mode :favorites)
-    (swap! app-state
-           (fn [state]
-             (assoc state
-                    :events (:favorites state)
-                    :display :favorites)))
-    (swap! app-state identity)))
-
-(defn set-search-result!
-  ([events page]
-   (set-search-result! events page false))
-  ([events page pagination]
-   (swap! app-state
-          (fn [state]
-            (let [fav? (if pagination
-                         #(contains? (:favorites state) (:id %))
-                         (constantly false))
-                  events (->> events
-                              (map #(assoc %1 :favorite? (fav? %1)))
-                              (reduce #(assoc %1 (:id %2) %2) {}))]
-              (assoc state
-                     :events events
-                     :page page
-                     :favorites (if pagination (:favorites state) {})
-                     :display :all))))))
-
-(defn set-goto-page-result! [events page]
-  (set-search-result! events page true))
-
-(defn set-favorite! [event-id]
-  (swap! app-state
-         (fn [state]
-           (let [state (update-in state [:events event-id :favorite?] not)]
-             (if (contains? (:favorites state) event-id)
-               (update state :favorites dissoc event-id)
-               (update state :favorites assoc event-id (get-in state [:events event-id])))))))
+(defn update-event-fav-status! [id]
+  (swap! state update-in [:events :items id :fav?] not))

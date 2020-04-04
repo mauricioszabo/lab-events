@@ -24,4 +24,4 @@
                                     (extract-page response)))
              :error-handler on-error
              :response-format :json
-             :url-params (merge {:size 10, :page 0, :sort "name,asc"} params {:apikey api-key})}))
+             :url-params (merge {:size 10} params {:apikey api-key})}))
