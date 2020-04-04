@@ -6,10 +6,10 @@ span.event-price + span.event-price::before {
   content: ", ";
 }
 
-a.event-fav-on {
+a.event-favorite-on {
   color: #ffd600;
 }
 
-a.event-fav-off {
+a.event-favorite-off {
   color: #e0e0e0;
 }

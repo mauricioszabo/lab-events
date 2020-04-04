@@ -5,15 +5,17 @@
             [events.component.events-listing :refer [events-listing]]
             [events.ticketmaster :as ticketmaster]))
 
-(defn handle-search-success [events page]
-  (.log js/console events page))
-
 (defn handle-search-error [error]
   (.log js/console error))
 
 (defn search-events []
   (ticketmaster/find-events (state/search-params)
-                            handle-search-success
+                            state/set-search-result!
+                            handle-search-error))
+
+(defn paginate [n]
+  (ticketmaster/find-events (assoc (state/search-params) :page n)
+                            state/set-search-result!
                             handle-search-error))
 
 (defn app []
@@ -27,7 +29,7 @@
     {:events (state/events)
      :page (state/events-page)
      :on-favorite-change state/update-event-fav-status!
-     :on-goto-page identity}]])
+     :on-goto-page paginate}]])
 
 (defn ^:export main []
   (reagent.dom/render
